@@ -2,15 +2,16 @@
 
 var glyphs = require('./gen-status-icons-glyphs');
 
-function genIconSamplePixel(def, px, py, ss) {
+function genIconSamplePixel(def, px, py, ss, size) {
+  var scale = 16 / size;
   var disc = 0;
   var white = 0;
   var sy;
   var sx;
   for (sy = 0; sy < ss; sy++) {
     for (sx = 0; sx < ss; sx++) {
-      var x = px + (sx + 0.5) / ss;
-      var y = py + (sy + 0.5) / ss;
+      var x = (px + (sx + 0.5) / ss) * scale;
+      var y = (py + (sy + 0.5) / ss) * scale;
       var dx = x - 8;
       var dy = y - 8;
       if (dx * dx + dy * dy <= 7.5 * 7.5) {
@@ -37,7 +38,7 @@ function genIconRenderIcon(def, size, ss) {
   var px;
   for (py = 0; py < size; py++) {
     for (px = 0; px < size; px++) {
-      var sample = genIconSamplePixel(def, px, py, ss);
+      var sample = genIconSamplePixel(def, px, py, ss, size);
       genIconWritePixel(rgba, px, py, size, def.color, sample);
     }
   }

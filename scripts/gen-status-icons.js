@@ -7,6 +7,7 @@ var path = require('path');
 var glyphMod = require('./gen-status-icons-glyphs');
 var renderMod = require('./gen-status-icons-render');
 var pngMod = require('./gen-status-icons-png');
+var gifMod = require('./gen-status-icons-gif');
 
 var SIZE = glyphMod.GEN_ICON_SIZE;
 var SS = 4;
@@ -26,3 +27,12 @@ Object.keys(ICONS).forEach(function (name) {
   fs.writeFileSync(file, pngMod.genIconEncodePng(rgba, SIZE));
   console.log('Wrote', path.relative(process.cwd(), file));
 });
+
+var TOOL_SIZE = 18;
+var toolIcon = {
+  color: [15, 76, 92],
+  glyph: [[[5.2, 4.4], [3.1, 8]], [[3.1, 8], [5.2, 11.6]], [[10.8, 4.4], [12.9, 8]], [[12.9, 8], [10.8, 11.6]]]
+};
+var toolFile = path.join(__dirname, '..', 'dw-classic', 'Objects', 'Favorites', 'Markup Validator.gif');
+fs.writeFileSync(toolFile, gifMod.genIconEncodeGif(renderMod.genIconRenderIcon(toolIcon, TOOL_SIZE, SS), TOOL_SIZE));
+console.log('Wrote', path.relative(process.cwd(), toolFile));

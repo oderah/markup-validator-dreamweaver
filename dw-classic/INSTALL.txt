@@ -58,7 +58,9 @@ INSTALL (test / coworker PC)
 
 7. Insert bar → Favorites → Markup Validator.
    The object is installed in Objects\Favorites, which is the Insert-bar
-   Favorites category.
+   Favorites category. Markup Validator.gif (18×18, same name as the
+   object file) is the Insert-bar icon. Without that GIF, Dreamweaver
+   shows a question mark.
 
 8. Optional: also add the Commands menu items from menus-fragment.xml.
 

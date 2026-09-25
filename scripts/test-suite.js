@@ -179,5 +179,10 @@ var iconGlyphs = require(path.join(root, 'scripts', 'gen-status-icons-glyphs'));
 var iconRender = require(path.join(root, 'scripts', 'gen-status-icons-render'));
 check(iconGlyphs.genIconInGlyph('dots', 8, 8), 'status icon dots glyph samples');
 check(iconRender.genIconRenderIcon({ color: [0, 0, 0], glyph: 'dots' }, 16, 4).length === 16 * 16 * 4, 'status icon render');
+var iconGif = require(path.join(root, 'scripts', 'gen-status-icons-gif'));
+var toolGif = fs.readFileSync(path.join(root, 'dw-classic', 'Objects', 'Favorites', 'Markup Validator.gif'));
+check(toolGif.slice(0, 6).toString('ascii') === 'GIF89a', 'insert-bar tool icon is a GIF');
+check(toolGif[6] === 18 && toolGif[8] === 18, 'insert-bar tool icon is 18x18');
+check(iconGif.genIconEncodeGif(Buffer.alloc(4, 255), 1)[0] === 0x47, 'gif encoder writes a GIF header');
 
 finishSuite();
