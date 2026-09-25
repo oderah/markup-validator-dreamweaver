@@ -1,0 +1,80 @@
+{
+  // Fallow config for JS/TS sources. Add project-specific ignorePatterns /
+  // ignoreDependencies only when needed — never to hide new debt.
+  // See docs/fallow/quality-gate.md.
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": [
+    "dw-classic/Floaters/Markup Validator.js",
+    "dw-classic/Floaters/Markup Validator Options.js",
+    "dw-classic/Commands/Validate Markup.js",
+    "dw-classic/Commands/Markup Validator Settings.js",
+    "dw-classic/Objects/Favorites/Markup Validator.js",
+    "scripts/smoke-classic.js",
+    "scripts/test-suite.js",
+    "scripts/run-coverage-tests.js",
+    "scripts/collect-coverage.js",
+    "scripts/gen-status-icons.js"
+  ],
+  "dynamicallyLoaded": [
+    "dw-classic/Floaters/mv-floater-*.js",
+    "dw-classic/Shared/MarkupValidator/**/*.js",
+    "dw-classic/**/*.css"
+  ],
+  "ignorePatterns": [
+    "**/dist/**",
+    "**/build/**",
+    "**/coverage/**"
+  ],
+  "ignoreDependencies": [],
+  "security": {
+    "categories": {}
+  },
+  "health": {
+    "maxCyclomatic": 20,
+    "maxCognitive": 15,
+    "maxCrap": 21,
+    "maxUnitSize": 60,
+    "coverage": "coverage/coverage-final.json",
+    "ignore": [
+      "**/*.test.js",
+      "**/*.test.jsx",
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "**/*.spec.js",
+      "**/*.spec.jsx",
+      "**/*.spec.ts",
+      "**/*.spec.tsx",
+      "**/__tests__/**",
+      "cypress/**"
+    ]
+  },
+  "duplicates": {
+    "ignore": ["cypress/**"],
+    "minTokens": 50
+  },
+  "regression": {
+    "baseline": {
+      "totalIssues": 0,
+      "unusedFiles": 0,
+      "unusedExports": 0,
+      "unusedTypes": 0,
+      "unusedDependencies": 0,
+      "unusedDevDependencies": 0,
+      "unusedOptionalDependencies": 0,
+      "unusedEnumMembers": 0,
+      "unusedClassMembers": 0,
+      "unresolvedImports": 0,
+      "unlistedDependencies": 0,
+      "duplicateExports": 0,
+      "circularDependencies": 0,
+      "reExportCycles": 0,
+      "typeOnlyDependencies": 0,
+      "testOnlyDependencies": 0,
+      "devDependenciesInProduction": 0,
+      "boundaryViolations": 0,
+      "boundaryCoverageViolations": 0,
+      "boundaryCallViolations": 0,
+      "policyViolations": 0
+    }
+  }
+}
