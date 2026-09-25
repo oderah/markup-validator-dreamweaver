@@ -1,0 +1,43 @@
+---
+applyTo: "**"
+description: Execute cross-cutting work in phases and load one primary skill per phase so agents pick the correct installed skill every time. Always apply for features that span layers (API + UI, DB + UI, etc.).
+---
+
+# Phased execution
+
+For any feature that touches more than one layer (API + UI, DB + UI, auth + UI,
+etc.), work **one phase at a time**. Do not skip ahead to UI before the contract
+is decided.
+
+In each phase:
+
+1. State which phase you are in before editing.
+2. Read at most **one primary** skill from `.agents/skills/<id>/SKILL.md`
+   (optional secondary only if blocked).
+3. Finish the phase goal before moving on.
+
+## Phase → skill map
+
+| Phase | Goal | Primary skill |
+|-------|------|----------------|
+| 0 Clarify | Scope and acceptance criteria | _(none — ask the user)_ |
+| 1 Contract | API / types / errors / authz boundaries | `api-and-interface-design` |
+| 2 Backend | Implement server/domain slice with tests | `test-driven-development` |
+| 3 Security | Authz, inputs, secrets, abuse cases | `security-and-hardening` |
+| 4 FE structure | Components, composition, boundaries | `vercel-composition-patterns` |
+| 5 FE UI | Distinctive visual UX | `frontend-design` |
+| 6 FE perf | Data fetching, bundles, re-renders | `vercel-react-best-practices` |
+| 7 Review | Staff-level quality pass | `code-review-and-quality` |
+| 8 Gate | Maintainability DoD | `fallow-quality-gate` + `npm run fallow:gate` |
+
+Optional later (graph-grounded PR review): `fallow-review` — after gate, not
+instead of phases 1–8.
+
+## Anti-patterns
+
+- Do **not** activate `frontend-design` and another visual/UI skill in the same turn.
+- Do **not** load React perf and composition skills while still designing the API contract.
+- Do **not** claim done without phase 8 when in-scope JS/TS changed (editable modes).
+- Prefer existing project patterns (`senior-standards`) over inventing architecture mid-feature.
+
+Single-layer tasks may start at the matching phase (e.g. pure UI → phase 4).

@@ -1,0 +1,43 @@
+---
+description: After JS/TS work in editable modes, run npm run fallow:gate and fix until green. Skip entirely in Ask/chat (read-only) mode. Enforces Fallow maintainability DoD (no dead code/dupes/targets, CRAP≤20, MI floors, score≥85). Never raise thresholds to pass.
+---
+
+# Fallow quality gate (DoD)
+
+## When to skip
+
+- **Ask / chat (read-only) mode**: do **not** run `npm run fallow:gate`, do not
+  open the remediation skill, and do not treat gate status as part of the
+  reply. Edits are impossible here; the Agent stop hook also skips follow-ups.
+- Backend-only or unrelated docs-only tasks: skip the JS/TS gate.
+
+## When required
+
+Before claiming **done** on any task that touches in-scope JS/TS paths
+(`./**`, `webpack.config.js`, `cypress/**`, `package.json`,
+`.fallowrc.json`) in a mode that can edit files, you **must**:
+
+1. Read `docs/fallow/quality-gate.md` if unsure.
+2. Run `npm run fallow:gate` (set `FALLOW_AGENT_SOURCE` for your agent host).
+3. On failure, follow `docs/fallow/remediation.md` and the Fallow skill —
+   refactor/test until exit **0**.
+4. Report gate pass/fail in the final reply.
+
+## Hard rules
+
+- **Do not** raise `.fallowrc.json` thresholds, widen ignores, or save baselines
+  to hide debt.
+- **Do not** skip the gate because findings “look minor” (except Ask/chat mode
+  above).
+- Prefer existing project factories/patterns for CRUD; keep hand-rolled data
+  fetching only when the resource shape does not fit.
+- CRAP coverage: avoid narrow `--coverage` overwrites that regress other
+  modules’ CRAP.
+- MI 80–84.9 requires an entry in `.fallow/mi-floor-exceptions.json` with a
+  reason; MI &lt; 80 is never allowed.
+
+## Agent stop hook
+
+If a stop-hook follow-up asks you to fix the Fallow gate, treat it as mandatory
+and re-run until green. The stop hook does not fire remediation follow-ups in
+Ask/chat mode.

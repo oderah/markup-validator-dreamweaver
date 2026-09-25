@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|edit_file|write_to_file|WriteFile",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 scripts/fallow_hooks/runtime.py --adapter vscode --action mark-scope"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 scripts/fallow_hooks/runtime.py --adapter vscode --action stop-gate"
+          }
+        ]
+      }
+    ]
+  }
+}

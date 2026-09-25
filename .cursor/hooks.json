@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": ".cursor/hooks/fallow-session-mode.sh",
+        "timeout": 15
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": ".cursor/hooks/fallow-prompt-mode.sh",
+        "timeout": 15
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": ".cursor/hooks/fallow-mark-scope.sh",
+        "timeout": 15
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/fallow-stop-gate.sh",
+        "loop_limit": 8,
+        "timeout": 300
+      }
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|edit_file|write_to_file|WriteFile",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 scripts/fallow_hooks/runtime.py --adapter claude --action mark-scope"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 scripts/fallow_hooks/runtime.py --adapter claude --action stop-gate"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/fallow-review-session-init.sh"
+          }
+        ]
+      }
+    ],
+    "FileChanged": [
+      {
+        "matcher": "feed.jsonl",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/fallow-review-on-feedback.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

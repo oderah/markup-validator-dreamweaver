@@ -1,0 +1,23 @@
+{
+  "fallow-quality-gate": {
+    "enabled": true,
+    "PostToolUse": [
+      {
+        "matcher": "write_to_file|edit_file|run_command|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 scripts/fallow_hooks/runtime.py --adapter antigravity --action mark-scope"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "python3 scripts/fallow_hooks/runtime.py --adapter antigravity --action stop-gate",
+        "timeout": 300
+      }
+    ]
+  }
+}
