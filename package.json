@@ -1,0 +1,15 @@
+{
+  "name": "markup-validator",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "fallow": "fallow dead-code && fallow dupes && fallow health --complexity",
+    "fallow:gate": "python3 scripts/fallow_gate.py",
+    "fallow:install-git-hook": "bash scripts/install_fallow_git_hook.sh",
+    "coverage": "node scripts/collect-coverage.js"
+  },
+  "devDependencies": {
+    "c8": "^10.1.2",
+    "fallow": "^3.28.0"
+  }
+}
