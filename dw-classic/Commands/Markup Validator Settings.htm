@@ -1,0 +1,40 @@
+<!DOCTYPE HTML SYSTEM "-//Macromedia//DWExtension layout-engine 5.0//dialog">
+<html>
+<head>
+<title>Markup Validator Settings</title>
+<script src="../Shared/MarkupValidator/MVPrefs.js"></script>
+<script src="../Shared/MarkupValidator/MVTrigger.js"></script>
+<script src="Markup Validator Settings.js"></script>
+</head>
+<body onLoad="onLoadSettings()">
+<form name="theForm">
+  <table border="0">
+    <tr>
+      <td>Idle debounce (ms)</td>
+      <td>
+        <select name="debounceMs">
+          <option value="1000">1000</option>
+          <option value="1500" selected>1500</option>
+          <option value="2000">2000</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2"><label><input type="checkbox" name="validateIdle" checked> Validate on idle (after typing stops)</label></td>
+    </tr>
+    <tr>
+      <td colspan="2"><label><input type="checkbox" name="validateSave" checked> Validate on save</label></td>
+    </tr>
+    <tr>
+      <td colspan="2"><label><input type="checkbox" name="includeWarnings" checked> Include warnings</label></td>
+    </tr>
+    <tr>
+      <td colspan="2"><label><input type="checkbox" name="warningsFail"> Treat warnings as fail (red chrome)</label></td>
+    </tr>
+    <tr>
+      <td colspan="2"><label><input type="checkbox" name="suppressDoctype"> Suppress missing DOCTYPE warning</label></td>
+    </tr>
+  </table>
+</form>
+</body>
+</html>

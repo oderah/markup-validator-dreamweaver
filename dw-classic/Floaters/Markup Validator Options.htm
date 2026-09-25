@@ -1,0 +1,42 @@
+<!DOCTYPE HTML SYSTEM "-//Macromedia//DWExtension layout-engine 5.0//dialog">
+<html>
+<head>
+<title>Markup Validator Options</title>
+<script src="../Shared/MarkupValidator/MVPrefs.js"></script>
+<script src="../Shared/MarkupValidator/MVTrigger.js"></script>
+<script src="Markup Validator Options.js"></script>
+</head>
+<body onLoad="mvOptionsOnLoad()">
+<form name="theForm" action="javascript:;">
+  <table border="0" cellpadding="6" cellspacing="0">
+    <tr>
+      <td>Idle debounce:
+        <select name="debounceMs" onchange="mvOptionsSave()">
+          <option value="1000">1000 ms</option>
+          <option value="1500" selected>1500 ms</option>
+          <option value="2000">2000 ms</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td><label><input type="checkbox" id="validateIdle" name="validateIdle" checked onclick="mvToggleSetting('validateIdle')"> Validate on idle</label></td>
+    </tr>
+    <tr>
+      <td><label><input type="checkbox" id="validateSave" name="validateSave" checked onclick="mvToggleSetting('validateSave')"> Validate on save</label></td>
+    </tr>
+    <tr>
+      <td><label><input type="checkbox" id="includeWarnings" name="includeWarnings" checked onclick="mvToggleSetting('includeWarnings')"> Include warnings</label></td>
+    </tr>
+    <tr>
+      <td><label><input type="checkbox" id="warningsFail" name="warningsFail" onclick="mvToggleSetting('warningsFail')"> Warnings fail (red)</label></td>
+    </tr>
+    <tr>
+      <td><label><input type="checkbox" id="suppressDoctype" name="suppressDoctype" onclick="mvToggleSetting('suppressDoctype')"> Suppress missing DOCTYPE warning</label></td>
+    </tr>
+    <tr>
+      <td><input type="button" value="Done" onclick="mvOptionsDone()"></td>
+    </tr>
+  </table>
+</form>
+</body>
+</html>

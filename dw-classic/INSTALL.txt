@@ -1,0 +1,99 @@
+Markup Validator — classic Dreamweaver install (no CEP, no admin, no debug mode)
+
+Works like other internal tools that copy into Configuration.
+
+————————————————————————
+INSTALL (test / coworker PC)
+————————————————————————
+
+1. Quit Dreamweaver completely.
+
+2. Open your USER Configuration folder. Typical paths:
+
+   %AppData%\Adobe\Dreamweaver_2021\en_US\Configuration\
+   %AppData%\Adobe\Adobe Dreamweaver 2021\en_US\Configuration\
+
+   (Use the Dreamweaver_* or Adobe Dreamweaver * folder that already exists.)
+
+3. From this package, COPY / MERGE into that Configuration folder:
+
+   Shared\MarkupValidator\     →  Configuration\Shared\MarkupValidator\
+   Floaters\                   →  Configuration\Floaters\
+     (Markup Validator.htm/.js/.css AND Markup Validator Options.htm/.js)
+   Commands\                   →  Configuration\Commands\
+   Objects\Favorites\          →  Configuration\Objects\Favorites\
+
+4. *** REQUIRED so it appears under Window ***
+
+   Putting files in Floaters\ alone does NOT add a Window menu item.
+   You must edit menus.xml:
+
+   a. Locate menus.xml:
+        USER:  Configuration\Menus\menus.xml
+      If missing, COPY menus.xml from the Dreamweaver install Configuration\Menus\
+      into your USER Configuration\Menus\ first.
+
+   b. Backup menus.xml.
+
+   c. Open it in Notepad (not Dreamweaver).
+
+   d. Search for the Window menu (name="Window").
+
+   e. Inside that <menu>…</menu>, paste:
+
+      <menuitem id="MV_Floater_MarkupValidator"
+                name="Markup Validator"
+                enabled="true"
+                command="dw.toggleFloater('Markup Validator')"
+                checked="dw.getFloaterVisibility('Markup Validator')"
+                dynamic="true" />
+
+   f. Save the file.
+
+   Full notes: menus-fragment.xml in this package.
+
+5. Start Dreamweaver.
+
+6. Open:  Window → Markup Validator
+
+7. Insert bar → Favorites → Markup Validator.
+   The object is installed in Objects\Favorites, which is the Insert-bar
+   Favorites category.
+
+8. Optional: also add the Commands menu items from menus-fragment.xml.
+
+————————————————————————
+QUICK CHECK IF IT STILL MISSING
+————————————————————————
+
+• Confirm this file exists:
+  Configuration\Floaters\Markup Validator.htm
+  (exact name with a space — not MarkupValidator.htm)
+
+• Confirm the menus.xml edit is in the USER Configuration tree Dreamweaver
+  actually loads (same folder that already has your other custom Objects).
+
+• Fully quit Dreamweaver (Task Manager) and reopen.
+
+• Try Commands → Validate Markup (if you added that menuitem) — it should
+  open the floater even if Window entry is wrong.
+
+————————————————————————
+USE
+————————————————————————
+
+• Validate — checks the active HTML/XML document
+• Click an issue in the panel list to jump to it in Code view
+• Settings — opens/closes the Options panel (idle, save, warnings).
+  Those checkboxes are not on the main panel.
+• Idle (~1.5s) / save — auto-validate when enabled (floater should be open)
+• Green / red border — on the Markup Validator panel only
+
+Engines: js-html / js-xml (practical checks). Not full Nu HTML Checker.
+
+————————————————————————
+UNINSTALL
+————————————————————————
+
+Remove Markup Validator files from Shared, Floaters, Commands, Objects\Favorites,
+and remove the menuitem(s) from menus.xml.

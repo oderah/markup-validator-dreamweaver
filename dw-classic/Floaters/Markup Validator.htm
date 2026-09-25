@@ -1,0 +1,79 @@
+<!DOCTYPE HTML SYSTEM "-//Macromedia//DWExtension layout-engine 5.0//dialog">
+<html>
+<head>
+<title>Markup Validator</title>
+<script src="../Shared/MarkupValidator/MVPrefs.js"></script>
+<script src="../Shared/MarkupValidator/MVTrigger.js"></script>
+<script src="../Shared/MarkupValidator/MVFloaterLib.js"></script>
+<script src="../Shared/MarkupValidator/MVSharedText.js"></script>
+<script src="../Shared/MarkupValidator/MVValidateHtmlCommon.js"></script>
+<script src="../Shared/MarkupValidator/MVValidateHtmlAttrs.js"></script>
+<script src="../Shared/MarkupValidator/MVValidateHtmlSkip.js"></script>
+<script src="../Shared/MarkupValidator/MVValidateHtmlStack.js"></script>
+<script src="../Shared/MarkupValidator/MVValidateHtmlScan.js"></script>
+<script src="../Shared/MarkupValidator/MVValidateHtml.js"></script>
+<script src="../Shared/MarkupValidator/MVValidateXmlCommon.js"></script>
+<script src="../Shared/MarkupValidator/MVValidateXmlSkip.js"></script>
+<script src="../Shared/MarkupValidator/MVValidateXmlTags.js"></script>
+<script src="../Shared/MarkupValidator/MVValidateXmlScan.js"></script>
+<script src="../Shared/MarkupValidator/MVValidateXml.js"></script>
+<script src="../Shared/MarkupValidator/MVNavigate.js"></script>
+<script src="../Shared/MarkupValidator/MVCore.js"></script>
+<script src="mv-floater-state.js"></script>
+<script src="mv-floater-ui.js"></script>
+<script src="mv-floater-render.js"></script>
+<script src="mv-floater-validate.js"></script>
+<script src="mv-floater-document.js"></script>
+<script src="Markup Validator.js"></script>
+<link href="Markup Validator.css" rel="stylesheet" type="text/css">
+</head>
+<body onLoad="mvFloaterOnLoad()">
+  <div id="chrome" class="chrome status-none">
+    <form name="mvForm" action="javascript:;">
+      <table class="mv-table" border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr class="state-row">
+          <td colspan="2">
+            <div class="state-banner">
+              <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="22" valign="middle"><img id="stateIcon" src="MarkupValidator/status-none.png" width="16" height="16" alt=""></td>
+                  <td valign="middle"><span id="stateBanner" class="state-label">Not validated</span></td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+        <tr class="header-row">
+          <td valign="middle">
+            <div id="docName" class="doc-name">No document</div>
+            <div id="statusText" class="status-text">This document has not been checked.</div>
+          </td>
+          <td width="80" align="right" valign="middle">
+            <input type="button" class="mv-btn mv-btn-primary" value="Validate" onclick="mvRunValidate()">
+          </td>
+        </tr>
+        <tr class="toolbar-row">
+          <td colspan="2">
+            <input type="button" class="mv-btn" name="mvSettingsBtn" value="Settings" onclick="mvToggleSettings()">
+            <label class="mv-label"><input type="checkbox" id="filterErrors" checked onclick="mvRenderIssues()"> Errors</label>
+            <label class="mv-label"><input type="checkbox" id="filterWarnings" checked onclick="mvRenderIssues()"> Warnings</label>
+          </td>
+        </tr>
+        <tr class="summary-row">
+          <td colspan="2"><div id="summary" class="summary">Not validated</div></td>
+        </tr>
+        <tr class="list-row">
+          <td colspan="2">
+            <select id="issueList" name="issueList" size="12" class="issue-list"
+                    onchange="mvOnIssueListChange()"
+                    onclick="mvOnIssueListChange()">
+              <option value="">This document has not been checked.</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+    </form>
+    <div class="footnote">Click an issue to jump in Code view.</div>
+  </div>
+</body>
+</html>

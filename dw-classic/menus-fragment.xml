@@ -1,0 +1,35 @@
+<!--
+  REQUIRED for Window → Markup Validator
+
+  1. Quit Dreamweaver.
+  2. Backup Configuration\Menus\menus.xml
+     (If menus.xml is only under the Dreamweaver install folder, copy it into your
+      USER Configuration\Menus\ first, then edit the USER copy.)
+  3. Open menus.xml in Notepad (not Dreamweaver).
+  4. Find the Window menu — search for name="Window" or id containing "Window".
+  5. Inside that <menu>...</menu>, add the menuitem below (before </menu>).
+  6. Save. Start Dreamweaver.
+
+  Floater filename must stay: Configuration\Floaters\Markup Validator.htm
+  (toggle name matches the file name without .htm)
+-->
+
+<!-- Add inside the Window menu: -->
+<menuitem id="MV_Floater_MarkupValidator"
+          name="Markup Validator"
+          enabled="true"
+          command="dw.toggleFloater('Markup Validator')"
+          checked="dw.getFloaterVisibility('Markup Validator')"
+          dynamic="true" />
+
+<!-- Optional — add inside the Commands menu: -->
+<menuitem id="MV_ValidateMarkup" name="Validate Markup"
+          file="Commands/Validate Markup.htm" enabled="true" />
+<menuitem id="MV_Settings" name="Markup Validator Settings"
+          file="Commands/Markup Validator Settings.htm" enabled="true" />
+<menuitem id="MV_Floater_Options"
+          name="Markup Validator Options"
+          enabled="true"
+          command="dw.toggleFloater('Markup Validator Options')"
+          checked="dw.getFloaterVisibility('Markup Validator Options')"
+          dynamic="true" />

@@ -1,0 +1,105 @@
+/* Markup Validator floater — table layout for Dreamweaver layout engine */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  color: #1f2937;
+  background: #f3f4f6;
+}
+.chrome {
+  border: 3px solid #9ca3af;
+  min-height: 100%;
+}
+.chrome.status-none { border-color: #9ca3af; }
+.chrome.status-busy { border-color: #2563eb; }
+.chrome.status-ok { border-color: #168048; }
+.chrome.status-fail { border-color: #c82828; }
+
+.mv-table { background: #ffffff; }
+.state-row td { padding: 0; }
+
+.state-banner {
+  padding: 7px 10px;
+  background: #e5e7eb;
+  border-bottom: 1px solid #d1d5db;
+}
+.state-label {
+  font-weight: bold;
+  font-size: 13px;
+  color: #374151;
+}
+.status-none .state-banner { background: #eceef1; border-bottom-color: #d1d5db; }
+.status-busy .state-banner { background: #dbeafe; border-bottom-color: #bfdbfe; }
+.status-ok .state-banner { background: #dcfce7; border-bottom-color: #bbf7d0; }
+.status-fail .state-banner { background: #fee2e2; border-bottom-color: #fecaca; }
+.status-none .state-label { color: #374151; }
+.status-busy .state-label { color: #1e40af; }
+.status-ok .state-label { color: #14532d; }
+.status-fail .state-label { color: #7f1d1d; }
+
+.header-row td {
+  padding: 8px 10px 7px 10px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+.doc-name {
+  font-weight: bold;
+  font-size: 12px;
+  color: #111827;
+}
+.status-text {
+  margin-top: 2px;
+  color: #6b7280;
+  font-size: 11px;
+}
+
+.toolbar-row td {
+  padding: 5px 8px;
+  background: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+}
+.mv-btn {
+  font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  margin: 0 4px 0 0;
+}
+.mv-btn-primary { font-weight: bold; }
+.mv-label {
+  margin-left: 8px;
+  font-size: 11px;
+  color: #374151;
+}
+
+.settings-layer {
+  background: #f4f5f7;
+  border: 1px solid #c5cad1;
+}
+.settings-panel {
+  background: #f9fafb;
+  padding: 8px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.summary-row td { padding: 0; }
+.summary {
+  padding: 5px 10px;
+  font-size: 11px;
+  color: #4b5563;
+  background: #ffffff;
+}
+
+.list-row td { padding: 0 8px 8px 8px; background: #ffffff; }
+.issue-list {
+  width: 100%;
+  font-size: 11px;
+  font-family: Consolas, "Lucida Console", monospace;
+}
+
+.footnote {
+  padding: 5px 10px;
+  font-size: 10px;
+  color: #000000;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
