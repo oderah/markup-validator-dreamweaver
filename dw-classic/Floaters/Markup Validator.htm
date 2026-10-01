@@ -32,43 +32,41 @@
     <form name="mvForm" action="javascript:;">
       <table class="mv-table" border="0" cellpadding="0" cellspacing="0" width="100%">
         <tr class="state-row">
-          <td colspan="2">
-            <div class="state-banner">
-              <table border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td width="22" valign="middle"><img id="stateIcon" src="MarkupValidator/status-none.png" width="16" height="16" alt=""></td>
-                  <td valign="middle"><span id="stateBanner" class="state-label">Not validated</span></td>
-                </tr>
-              </table>
-            </div>
-          </td>
+          <td class="state-banner" width="26" nowrap valign="middle"><img id="stateIcon" src="MarkupValidator/status-none.png" width="16" height="16" alt=""></td>
+          <td class="state-banner" valign="middle"><span id="stateBanner" class="state-label">Not validated</span></td>
+          <td class="state-banner state-tool" width="88" nowrap align="right" valign="middle"><img id="toolIcon" src="../Objects/Favorites/Markup Validator.gif" width="18" height="18" alt=""></td>
         </tr>
         <tr class="header-row">
-          <td valign="middle">
+          <td colspan="2" valign="middle">
             <div id="docName" class="doc-name">No document</div>
             <div id="statusText" class="status-text">This document has not been checked.</div>
           </td>
-          <td width="80" align="right" valign="middle">
+          <td class="validate-cell" width="88" nowrap align="right" valign="middle">
             <input type="button" class="mv-btn mv-btn-primary" value="Validate" onclick="mvRunValidate()">
           </td>
         </tr>
         <tr class="toolbar-row">
-          <td colspan="2">
+          <td colspan="3">
             <input type="button" class="mv-btn" name="mvSettingsBtn" value="Settings" onclick="mvToggleSettings()">
-            <label class="mv-label"><input type="checkbox" id="filterErrors" checked onclick="mvRenderIssues()"> Errors</label>
-            <label class="mv-label"><input type="checkbox" id="filterWarnings" checked onclick="mvRenderIssues()"> Warnings</label>
+            <label class="mv-label"><input type="checkbox" id="filterErrors" name="filterErrors" checked="true" onclick="mvRenderIssues()"> Errors</label>
+            <label class="mv-label"><input type="checkbox" id="filterWarnings" name="filterWarnings" checked="true" onclick="mvRenderIssues()"> Warnings</label>
           </td>
         </tr>
         <tr class="summary-row">
-          <td colspan="2"><div id="summary" class="summary">Not validated</div></td>
+          <td colspan="3"><div id="summary" class="summary">Not validated</div></td>
         </tr>
         <tr class="list-row">
-          <td colspan="2">
+          <td colspan="3">
             <select id="issueList" name="issueList" size="12" class="issue-list"
                     onchange="mvOnIssueListChange()"
                     onclick="mvOnIssueListChange()">
               <option value="">This document has not been checked.</option>
             </select>
+          </td>
+        </tr>
+        <tr class="detail-row">
+          <td colspan="3">
+            <div id="issueDetail" class="issue-detail">Select an issue to see its full description.</div>
           </td>
         </tr>
       </table>

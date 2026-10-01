@@ -1,13 +1,16 @@
 /**
  * Markup Validator — preference helpers (Dreamweaver classic JS).
- * Pref keys stored via dreamweaver.get/setPreferenceString.
+ * Stored with dreamweaver.get/setPreferenceString(section, key, value).
+ * A single concatenated argument is ignored by Dreamweaver, so every
+ * setting would stay on its default.
  */
 var MVPrefs = (function () {
-  var PREFIX = 'MarkupValidator_';
+  var SECTION = 'MarkupValidator';
 
   function get(key, fallback) {
     try {
-      var v = dreamweaver.getPreferenceString(PREFIX + key);
+      var fallbackText = fallback == null ? '' : String(fallback);
+      var v = dreamweaver.getPreferenceString(SECTION, key, fallbackText);
       if (v == null || v === '') return fallback;
       return v;
     } catch (e) {
@@ -17,7 +20,7 @@ var MVPrefs = (function () {
 
   function set(key, value) {
     try {
-      dreamweaver.setPreferenceString(PREFIX + key, String(value));
+      dreamweaver.setPreferenceString(SECTION, key, String(value));
     } catch (e) { /* ignore */ }
   }
 

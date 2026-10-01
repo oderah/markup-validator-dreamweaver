@@ -85,17 +85,44 @@ ctx.DWfile.exists = function () { return true; };
 ctx.mvNavOpenIssueFile({ file: 'file:///C|/tmp/a.html' });
 
 var label = ctx.MVFloaterLib.issueOptionLabel({ severity: 'warning', line: 1, message: 'm', file: '/a/b.html' });
-assert(label.indexOf('b.html') >= 0, 'floater issue label basename');
+assert(label.indexOf('[Warn]') >= 0 && label.indexOf('m') >= 0, 'floater issue label keeps the warning message');
+var accurateLabel = ctx.MVFloaterLib.issueOptionLabel({
+  severity: 'error',
+  line: 40,
+  column: 8,
+  message: 'Unclosed element <div>.',
+  file: '/docs/page.html'
+});
+assert(accurateLabel.indexOf('Unclosed element <div>.') >= 0, 'list label keeps the error message');
+var longLabel = ctx.MVFloaterLib.issueOptionLabel({
+  severity: 'error',
+  line: 1,
+  message: 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz'
+});
+assert(longLabel.length <= 48, 'list labels stay short so the select cannot widen the floater');
+assert(longLabel.indexOf('[Error] abcdefghijklmnopqrstuvwxyz') === 0, 'truncated label keeps the start of the message');
 assert(ctx.MVFloaterLib.missingDoctypeWarning({ severity: 'warning', ruleId: 'doctype' }), 'doctype warning detect');
 
 ctx.Option = function (label, value) {
   return { text: label, value: value };
 };
 var floaterDom = {};
+function dwOptionCollection() {
+  var items = [];
+  return new Proxy(items, {
+    set: function (target, prop, value) {
+      if (String(prop) === '0' && value == null) {
+        target.shift();
+        return true;
+      }
+      target[prop] = value;
+      return true;
+    }
+  });
+}
+var issueListEl = { options: dwOptionCollection(), selectedIndex: -1 };
 ctx.document.getElementById = function (id) {
-  if (id === 'issueList') {
-    return { options: [], selectedIndex: -1 };
-  }
+  if (id === 'issueList') return issueListEl;
   if (!floaterDom[id]) {
     floaterDom[id] = { innerHTML: '', className: '', src: '', checked: true };
   }
@@ -115,6 +142,41 @@ var issueList = ctx.document.getElementById('issueList');
 issueList.selectedIndex = 0;
 issueList.options[0] = ctx.Option('0', '0');
 ctx.mvFloaterOnIssueListClickDeferred();
+
+var longA = 'First issue description that must appear in full, not truncated in the list. ' +
+  'Extra detail about the first error stays visible in the detail section.';
+var longB = 'Second issue description replaces the first when that row is clicked. ' +
+  'The detail section shows this message in full.';
+ctx.mvFloaterApplyResult({
+  ok: false,
+  issues: [
+    { severity: 'error', line: 4, column: 2, message: longA, ruleId: 'mismatch', file: '/docs/a.html' },
+    { severity: 'warning', line: 9, column: 1, message: longB, ruleId: 'unclosed' }
+  ],
+  errorCount: 1,
+  warningCount: 1
+});
+assert(floaterDom.issueDetail && floaterDom.issueDetail.innerHTML.indexOf(longA) >= 0, 'detail shows the first error in full before a click');
+issueList.selectedIndex = 0;
+issueList.options[0] = ctx.Option('0', '0');
+issueList.options[1] = ctx.Option('1', '1');
+ctx.mvFloaterOnIssueListClickDeferred();
+assert(floaterDom.issueDetail.innerHTML.indexOf(longA) >= 0, 'detail shows the selected error in full');
+assert(floaterDom.issueDetail.innerHTML.indexOf('Line 4') >= 0, 'detail includes the selected location');
+issueList.selectedIndex = 1;
+ctx.mvFloaterOnIssueListClickDeferred();
+assert(floaterDom.issueDetail.innerHTML.indexOf(longB) >= 0, 'detail updates when another issue is clicked');
+assert(floaterDom.issueDetail.innerHTML.indexOf(longA) < 0, 'detail drops the previous issue');
+
+var divList = { innerHTML: '' };
+ctx.MVFloaterLib.fillIssueList(divList, [
+  { severity: 'error', line: 2, column: 3, message: 'Full <message> that wraps inside the panel' }
+], 0);
+assert(divList.innerHTML.indexOf('mvFloaterSelectIssue(0)') >= 0, 'issue row selects on click');
+assert(divList.innerHTML.indexOf('&lt;message&gt;') >= 0, 'issue row escapes the message');
+assert(divList.innerHTML.indexOf('issue-row-selected') >= 0, 'selected issue row is marked');
+assert(ctx.MVFloaterLib.displayHtml('C:/a/b.html').indexOf('<wbr>') >= 0, 'paths can wrap at slashes');
+assert(ctx.MVFloaterLib.displayHtml('abcdefghijklmnopqrstuvwxyz').indexOf('<wbr>') >= 0, 'long labels break so they cannot widen the floater');
 
 var navDom = {
   setView: function () {},

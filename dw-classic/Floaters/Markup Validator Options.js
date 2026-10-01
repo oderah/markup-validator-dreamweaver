@@ -17,10 +17,17 @@ function prefsForm() {
   return null;
 }
 
+var mvOptionsApplying = false;
+
 function mvOptionsOnLoad() {
   var f = prefsForm();
   if (!f) return;
-  MVPrefs.applySettingsToForm(f, MVPrefs.load());
+  mvOptionsApplying = true;
+  try {
+    MVPrefs.applySettingsToForm(f, MVPrefs.load());
+  } finally {
+    mvOptionsApplying = false;
+  }
 }
 
 var BOOL_DEFAULTS = {
@@ -31,15 +38,20 @@ var BOOL_DEFAULTS = {
   suppressDoctype: false
 };
 
+function mvOptionsAssignChecked(box, on) {
+  if (box) box.checked = !!on;
+}
+
 function setChecked(name, on) {
+  var form = prefsForm();
+  var box = form && form[name];
+  mvOptionsApplying = true;
   try {
-    var f = prefsForm();
-    if (f && f[name]) f[name].checked = !!on;
-  } catch (e1) { /* ignore */ }
-  try {
-    var el = document.getElementById(name);
-    if (el) el.checked = !!on;
-  } catch (e2) { /* ignore */ }
+    mvOptionsAssignChecked(box, on);
+    if (document.getElementById) mvOptionsAssignChecked(document.getElementById(name), on);
+  } finally {
+    mvOptionsApplying = false;
+  }
 }
 
 function requestRevalidate() {
@@ -50,6 +62,7 @@ function requestRevalidate() {
 // can deliver a second click. Flip the stored preference and then match the box to it.
 var lastFlip = {};
 function mvToggleSetting(name) {
+  if (mvOptionsApplying) return;
   var now = new Date().getTime();
   if (lastFlip[name] && now - lastFlip[name] < 300) return;
   lastFlip[name] = now;

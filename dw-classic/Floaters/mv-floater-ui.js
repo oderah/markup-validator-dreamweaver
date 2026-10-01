@@ -16,12 +16,14 @@ function mvFloaterPaintStateChrome(kind) {
 function mvFloaterSetState(kind, detail) {
   MVFloaterState.uiState = kind;
   mvFloaterPaintStateChrome(kind);
-  if (mvFloater$('statusText')) mvFloater$('statusText').innerHTML = detail || '';
+  if (mvFloater$('statusText')) mvFloater$('statusText').innerHTML = MVFloaterLib.displayHtml(detail || '');
 }
 
 function mvFloaterUpdateDocLabel() {
   var info = MVCore.getActiveInfo();
-  if (mvFloater$('docName')) mvFloater$('docName').innerHTML = info.title || info.path || 'No document';
+  if (mvFloater$('docName')) {
+    mvFloater$('docName').innerHTML = MVFloaterLib.displayHtml(info.title || info.path || 'No document');
+  }
 }
 
 function mvFloaterDefaultSettings() {

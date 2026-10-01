@@ -18,7 +18,7 @@ no Java, no admin rights, no debug mode.
 - **Auto-validate** on idle (default 1.5 s debounce) and/or on save.
 - **Options panel** — idle/save triggers, include warnings, treat warnings as
   failures, suppress DOCTYPE warnings. Stored as Dreamweaver preferences with
-  the `MarkupValidator_` prefix.
+  under the `MarkupValidator` preference section.
 - **Commands** — `Validate Markup` and `Markup Validator Settings`.
 - **Insert bar object** — `Favorites → Markup Validator`.
 

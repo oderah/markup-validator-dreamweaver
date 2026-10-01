@@ -77,15 +77,24 @@ function mvFloaterCancelIdle() {
   MVFloaterState.idleTimer = null;
 }
 
+function mvFloaterCanIdleValidate(info) {
+  if (!info || !info.ok) return false;
+  return info.language === 'html' || info.language === 'xml';
+}
+
+function mvFloaterRunIdleValidate() {
+  MVFloaterState.idleTimer = null;
+  if (!mvFloaterCurrentSettings().validateIdle) return;
+  if (!mvFloaterCanIdleValidate(MVCore.getActiveInfo())) return;
+  mvFloaterRunValidate('idle');
+}
+
 function mvFloaterScheduleIdleValidate() {
   var settings = mvFloaterCurrentSettings();
-  if (!settings.validateIdle) return;
+  if (!settings.validateIdle) {
+    mvFloaterCancelIdle();
+    return;
+  }
   mvFloaterCancelIdle();
-  MVFloaterState.idleTimer = setTimeout(function () {
-    MVFloaterState.idleTimer = null;
-    var info = MVCore.getActiveInfo();
-    if (!info.ok) return;
-    if (info.language !== 'html' && info.language !== 'xml') return;
-    mvFloaterRunValidate('idle');
-  }, settings.debounceMs || 1500);
+  MVFloaterState.idleTimer = setTimeout(mvFloaterRunIdleValidate, settings.debounceMs || 1500);
 }

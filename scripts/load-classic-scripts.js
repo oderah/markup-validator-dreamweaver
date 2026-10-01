@@ -40,11 +40,18 @@ function createClassicTestContext() {
     clearTimeout: clearTimeout,
     Date: Date,
     dreamweaver: {
-      getPreferenceString: function (key) {
-        return Object.prototype.hasOwnProperty.call(prefs, key) ? prefs[key] : '';
+      getPreferenceString: function (section, key, defaultValue) {
+        if (arguments.length < 2) throw new Error('getPreferenceString(section, key, defaultValue)');
+        var bucket = prefs[section];
+        if (!bucket || !Object.prototype.hasOwnProperty.call(bucket, key)) {
+          return defaultValue == null ? '' : String(defaultValue);
+        }
+        return bucket[key];
       },
-      setPreferenceString: function (key, value) {
-        prefs[key] = String(value);
+      setPreferenceString: function (section, key, value) {
+        if (arguments.length < 3) throw new Error('setPreferenceString(section, key, value)');
+        if (!prefs[section]) prefs[section] = {};
+        prefs[section][key] = String(value);
       }
     },
     dw: {

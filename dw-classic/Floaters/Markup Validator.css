@@ -15,23 +15,25 @@ body {
 .chrome.status-ok { border-color: #168048; }
 .chrome.status-fail { border-color: #c82828; }
 
-.mv-table { background: #ffffff; }
-.state-row td { padding: 0; }
-
-.state-banner {
+.mv-table {
+  background: #ffffff;
+  width: 100%;
+}
+.state-row td.state-banner {
   padding: 7px 10px;
   background: #e5e7eb;
   border-bottom: 1px solid #d1d5db;
 }
+.state-row td.state-tool { padding-left: 4px; }
 .state-label {
   font-weight: bold;
   font-size: 13px;
   color: #374151;
 }
-.status-none .state-banner { background: #eceef1; border-bottom-color: #d1d5db; }
-.status-busy .state-banner { background: #dbeafe; border-bottom-color: #bfdbfe; }
-.status-ok .state-banner { background: #dcfce7; border-bottom-color: #bbf7d0; }
-.status-fail .state-banner { background: #fee2e2; border-bottom-color: #fecaca; }
+.status-none .state-row td.state-banner { background: #eceef1; border-bottom-color: #d1d5db; }
+.status-busy .state-row td.state-banner { background: #dbeafe; border-bottom-color: #bfdbfe; }
+.status-ok .state-row td.state-banner { background: #dcfce7; border-bottom-color: #bbf7d0; }
+.status-fail .state-row td.state-banner { background: #fee2e2; border-bottom-color: #fecaca; }
 .status-none .state-label { color: #374151; }
 .status-busy .state-label { color: #1e40af; }
 .status-ok .state-label { color: #14532d; }
@@ -41,6 +43,10 @@ body {
   padding: 8px 10px 7px 10px;
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
+}
+.doc-name, .status-text, .state-label, .issue-detail-message {
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 .doc-name {
   font-weight: bold;
@@ -52,9 +58,14 @@ body {
   color: #6b7280;
   font-size: 11px;
 }
+.header-row td.validate-cell {
+  padding-left: 4px;
+  padding-right: 10px;
+}
+.header-row .mv-btn-primary { margin: 0; }
 
 .toolbar-row td {
-  padding: 5px 8px;
+  padding: 5px 10px;
   background: #f3f4f6;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -89,11 +100,31 @@ body {
   background: #ffffff;
 }
 
-.list-row td { padding: 0 8px 8px 8px; background: #ffffff; }
+.list-row td { padding: 0 10px 8px 10px; background: #ffffff; }
 .issue-list {
   width: 100%;
   font-size: 11px;
   font-family: Consolas, "Lucida Console", monospace;
+}
+
+.detail-row td { padding: 0 10px 8px 10px; background: #ffffff; }
+.issue-detail {
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: 8px 10px;
+  min-height: 52px;
+  font-size: 11px;
+  color: #4b5563;
+  line-height: 1.45;
+}
+.issue-detail-meta {
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 4px;
+}
+.issue-detail-message {
+  color: #1f2937;
+  white-space: pre-wrap;
 }
 
 .footnote {

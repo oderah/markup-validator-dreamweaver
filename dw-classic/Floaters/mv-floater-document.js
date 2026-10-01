@@ -21,36 +21,59 @@ function mvFloaterOnDocumentEdited() {
   mvFloaterOnSourceChanged(h);
 }
 
-function mvFloaterActiveUrl() {
+function mvFloaterRawUrl() {
   try {
     var dom = dw.getDocumentDOM();
     return dom && dom.URL ? String(dom.URL) : '';
   } catch (e) { return ''; }
 }
 
-function mvFloaterHasDwFile(url) {
-  if (!url) return false;
-  return typeof DWfile !== 'undefined';
+function mvFloaterActiveUrl() {
+  return MVFloaterLib.canonicalUrl(mvFloaterRawUrl());
+}
+
+function mvFloaterExistingFileUrl(url) {
+  if (!url || typeof DWfile === 'undefined' || !DWfile.exists) return '';
+  var variants = MVFloaterLib.urlVariants(url);
+  var i;
+  for (i = 0; i < variants.length; i++) {
+    try {
+      if (DWfile.exists(variants[i])) return variants[i];
+    } catch (e) { /* ignore */ }
+  }
+  return '';
 }
 
 function mvFloaterReadMtime(url) {
-  if (!mvFloaterHasDwFile(url)) return '';
-  if (!DWfile.exists(url)) return '';
-  try { return String(DWfile.getModificationDate(url) || ''); } catch (e) { return ''; }
+  var fileUrl = mvFloaterExistingFileUrl(url);
+  if (!fileUrl) return '';
+  try { return String(DWfile.getModificationDate(fileUrl) || ''); } catch (e) { return ''; }
 }
 
 function mvFloaterReadDiskHash(url) {
-  if (!mvFloaterHasDwFile(url)) return '';
-  if (!DWfile.exists(url)) return '';
-  try { return MVFloaterLib.hashText(MVFloaterLib.normalizeMarkup(DWfile.read(url))); } catch (e) { return ''; }
+  var fileUrl = mvFloaterExistingFileUrl(url);
+  if (!fileUrl) return '';
+  try { return MVFloaterLib.hashText(MVFloaterLib.normalizeMarkup(DWfile.read(fileUrl))); } catch (e) { return ''; }
+}
+
+function mvFloaterDirtyMethod(dom) {
+  try {
+    if (typeof dom.getIsDirty === 'function') return !!dom.getIsDirty();
+    if (typeof dom.isDirty === 'function') return !!dom.isDirty();
+  } catch (e) { /* ignore */ }
+  return null;
+}
+
+function mvFloaterDirtyFromDom(dom) {
+  if (!dom) return null;
+  var fromMethod = mvFloaterDirtyMethod(dom);
+  if (fromMethod !== null) return fromMethod;
+  if (typeof dom.modified === 'boolean') return dom.modified;
+  return null;
 }
 
 function mvFloaterReadDirty() {
-  try {
-    var dom = dw.getDocumentDOM();
-    if (!dom || !dom.getIsDirty) return null;
-    return !!dom.getIsDirty();
-  } catch (e) { return null; }
+  try { return mvFloaterDirtyFromDom(dw.getDocumentDOM()); } catch (e) { return null; }
 }
 
 function mvFloaterNoteDocumentBaseline() {
@@ -64,11 +87,21 @@ function mvFloaterNoteDocumentBaseline() {
     !!(diskHash && MVFloaterState.lastSourceHash && diskHash !== MVFloaterState.lastSourceHash);
 }
 
+function mvFloaterSameDocumentText(previousHash) {
+  return !!(previousHash && previousHash === MVFloaterState.lastSourceHash);
+}
+
+function mvFloaterValidateBecauseSaved(prevUrl, previousHash) {
+  if (!mvFloaterCurrentSettings().validateSave) return false;
+  if (prevUrl === '' && MVFloaterState.lastUrl) return true;
+  return mvFloaterSameDocumentText(previousHash);
+}
+
 function mvFloaterOnDocumentSwitched(prevUrl) {
+  var previousHash = MVFloaterState.lastSourceHash;
   mvFloaterUpdateDocLabel();
-  var becameNamed = (prevUrl === '' && MVFloaterState.lastUrl);
   mvFloaterNoteDocumentBaseline();
-  if (becameNamed && mvFloaterCurrentSettings().validateSave) {
+  if (mvFloaterValidateBecauseSaved(prevUrl, previousHash)) {
     mvFloaterCancelIdle();
     mvFloaterRunValidate('save');
     return;
@@ -80,19 +113,31 @@ function mvFloaterOnDocumentSwitched(prevUrl) {
 function mvFloaterUpdateDirtyState(dirty, mtime, diskHash, h) {
   if (mtime) MVFloaterState.lastMtime = mtime;
   if (dirty !== null) MVFloaterState.lastDirty = dirty;
-  MVFloaterState.hadUnsaved = (dirty === true) || !!(diskHash && h && diskHash !== h);
+  if (dirty === true) MVFloaterState.hadUnsaved = true;
+  if (diskHash && h) MVFloaterState.hadUnsaved = dirty === true || diskHash !== h;
 }
 
-function mvFloaterHandleSuppressDoctypeChange(settings) {
-  var on = !!settings.suppressDoctype;
-  if (on === MVFloaterState.lastSuppressDoctype) return;
-  MVFloaterState.lastSuppressDoctype = on;
+function mvFloaterResultSettingsKey(settings) {
+  return (settings.includeWarnings ? '1' : '0') +
+    (settings.warningsFail ? '1' : '0') +
+    (settings.suppressDoctype ? '1' : '0');
+}
+
+function mvFloaterRememberResultSettings(settings) {
+  MVFloaterState.lastResultSettingsKey = mvFloaterResultSettingsKey(settings);
+}
+
+function mvFloaterApplyLiveSettings(settings) {
+  if (!settings.validateIdle) mvFloaterCancelIdle();
+  var key = mvFloaterResultSettingsKey(settings);
+  if (key === MVFloaterState.lastResultSettingsKey) return;
+  mvFloaterRememberResultSettings(settings);
   if (MVFloaterState.busy || !MVFloaterState.lastResult) return;
-  mvFloaterApplyResult(MVFloaterState.lastResult);
   mvFloaterRunValidate('settings');
 }
 
 function mvFloaterPollUrlChange(url) {
+  url = MVFloaterLib.canonicalUrl(url);
   if (url === MVFloaterState.lastUrl) return false;
   var prevUrl = MVFloaterState.lastUrl;
   MVFloaterState.lastUrl = url;
@@ -103,7 +148,8 @@ function mvFloaterPollUrlChange(url) {
 function mvFloaterPollSaveEvent(h, dirty, mtime, diskHash, settings) {
   var L = MVFloaterLib;
   var saved = L.detectSaveEvent(
-    MVFloaterState.lastDirty, dirty, MVFloaterState.hadUnsaved, diskHash, h, mtime, MVFloaterState.lastMtime
+    MVFloaterState.lastDirty, dirty, MVFloaterState.hadUnsaved, diskHash, h,
+    mtime, MVFloaterState.lastMtime, MVFloaterState.lastSourceHash
   );
   mvFloaterUpdateDirtyState(dirty, mtime, diskHash, h);
   if (!saved || !settings.validateSave) return false;
@@ -111,6 +157,20 @@ function mvFloaterPollSaveEvent(h, dirty, mtime, diskHash, settings) {
   mvFloaterCancelIdle();
   mvFloaterRunValidate('save');
   return true;
+}
+
+function mvFloaterCheckForSave() {
+  var url = mvFloaterActiveUrl();
+  var h = mvFloaterSnapshotSourceHash();
+  var diskHash = '';
+  if (h && h !== MVFloaterState.lastSourceHash) diskHash = mvFloaterReadDiskHash(url);
+  return mvFloaterPollSaveEvent(
+    h,
+    mvFloaterReadDirty(),
+    mvFloaterReadMtime(url),
+    diskHash,
+    mvFloaterCurrentSettings()
+  );
 }
 
 function mvFloaterPollDocument() {
@@ -122,7 +182,7 @@ function mvFloaterPollDocument() {
   var diskHash = mvFloaterReadDiskHash(url);
   var settings = mvFloaterCurrentSettings();
   if (mvFloaterPollSaveEvent(h, dirty, mtime, diskHash, settings)) return;
-  mvFloaterHandleSuppressDoctypeChange(settings);
+  mvFloaterApplyLiveSettings(settings);
   if (MVFloaterState.busy) return;
   if (h && h !== MVFloaterState.lastSourceHash) mvFloaterOnSourceChanged(h);
 }
@@ -133,10 +193,41 @@ function mvFloaterPollCommandFlag() {
   } catch (e) { /* ignore */ }
 }
 
+function mvFloaterAfterHostSave() {
+  if (!mvFloaterCurrentSettings().validateSave) return;
+  mvFloaterNoteDocumentBaseline();
+  mvFloaterCancelIdle();
+  mvFloaterRunValidate('save');
+}
+
+function mvFloaterCallOriginalSave(original, args) {
+  try { return original.apply(dw, args); } catch (e) { return original(args[0]); }
+}
+
+function mvFloaterWrapSave(name) {
+  var original = dw[name];
+  if (typeof original !== 'function' || original._mvWrapped) return;
+  function wrapped() {
+    var result = mvFloaterCallOriginalSave(original, arguments);
+    try { mvFloaterAfterHostSave(); } catch (e) { /* ignore */ }
+    return result;
+  }
+  wrapped._mvWrapped = true;
+  try { dw[name] = wrapped; } catch (e2) { /* host method is read-only */ }
+}
+
+function mvFloaterInstallSaveHook() {
+  if (!dw) return;
+  mvFloaterWrapSave('saveDocument');
+  mvFloaterWrapSave('saveAll');
+  mvFloaterWrapSave('saveDocumentAs');
+  mvFloaterWrapSave('saveFrameset');
+}
+
 function mvFloaterPanelOnLoad() {
   mvFloaterUpdateDocLabel();
   mvFloaterNoteDocumentBaseline();
-  try { MVFloaterState.lastSuppressDoctype = !!mvFloaterCurrentSettings().suppressDoctype; } catch (ePref) { /* ignore */ }
+  try { mvFloaterRememberResultSettings(mvFloaterCurrentSettings()); } catch (ePref) { /* ignore */ }
   mvFloaterResetToNotValidated();
   mvFloaterSyncSettingsButton();
   setInterval(function () {
@@ -147,12 +238,6 @@ function mvFloaterPanelOnLoad() {
 }
 
 function mvFloaterSelectionChanged() {
-  var url = mvFloaterActiveUrl();
-  if (url !== MVFloaterState.lastUrl) {
-    var prevUrl = MVFloaterState.lastUrl;
-    MVFloaterState.lastUrl = url;
-    mvFloaterOnDocumentSwitched(prevUrl);
-    return;
-  }
+  if (mvFloaterPollUrlChange(mvFloaterActiveUrl())) return;
   mvFloaterUpdateDocLabel();
 }

@@ -43,12 +43,11 @@ function mvFloaterLibLineLocation(it) {
 }
 
 function mvFloaterLibIssueOptionLabel(it) {
-  var loc = mvFloaterLibLineLocation(it);
-  if (it.file) loc = mvFloaterLibBasename(it.file) + ' ' + loc;
-  var label = mvFloaterLibSeverityTag(it.severity || 'error') + '  ' + loc + ' \u2014 ' +
-    String(it.message || '').replace(/\s+/g, ' ');
-  if (label.length <= 180) return label;
-  return label.substring(0, 177) + '...';
+  var tag = mvFloaterLibSeverityTag(it.severity || 'error').replace(/\s+$/, '');
+  var message = String(it.message || '').replace(/\s+/g, ' ');
+  var label = tag + ' ' + message;
+  if (label.length <= 48) return label;
+  return label.substring(0, 45) + '...';
 }
 
 function mvFloaterLibMissingDoctypeWarning(issue) {
@@ -74,15 +73,44 @@ function mvFloaterLibSavedFromDiskMatch(hadUnsaved, diskHash, h) {
   return h === diskHash;
 }
 
-function mvFloaterLibSavedFromMtimeChange(hadUnsaved, mtime, lastMtime) {
-  if (!hadUnsaved || !mtime || !lastMtime) return false;
+function mvFloaterLibCanonicalUrl(url) {
+  return String(url || '').replace(/\\/g, '/').replace(/^file:\/\/\/([a-zA-Z])\|/i, 'file:///$1:');
+}
+
+function mvFloaterLibPushUnique(list, value) {
+  if (!value) return;
+  var i;
+  for (i = 0; i < list.length; i++) {
+    if (list[i] === value) return;
+  }
+  list.push(value);
+}
+
+function mvFloaterLibUrlVariants(url) {
+  var raw = String(url || '');
+  var list = [];
+  mvFloaterLibPushUnique(list, raw);
+  mvFloaterLibPushUnique(list, raw.replace(/^file:\/\/\/([a-zA-Z]):/i, 'file:///$1|'));
+  mvFloaterLibPushUnique(list, mvFloaterLibCanonicalUrl(raw));
+  return list;
+}
+
+function mvFloaterLibSavedFromMtimeChange(mtime, lastMtime) {
+  if (!mtime || !lastMtime) return false;
   return mtime !== lastMtime;
 }
 
-function mvFloaterLibDetectSaveEvent(lastDirty, dirty, hadUnsaved, diskHash, h, mtime, lastMtime) {
+function mvFloaterLibSavedFromSourceLanding(lastHash, h, diskHash) {
+  if (!lastHash || !h || !diskHash) return false;
+  if (h === lastHash) return false;
+  return h === diskHash;
+}
+
+function mvFloaterLibDetectSaveEvent(lastDirty, dirty, hadUnsaved, diskHash, h, mtime, lastMtime, lastHash) {
   if (mvFloaterLibSavedFromDirty(lastDirty, dirty)) return true;
   if (mvFloaterLibSavedFromDiskMatch(hadUnsaved, diskHash, h)) return true;
-  return mvFloaterLibSavedFromMtimeChange(hadUnsaved, mtime, lastMtime);
+  if (mvFloaterLibSavedFromMtimeChange(mtime, lastMtime)) return true;
+  return mvFloaterLibSavedFromSourceLanding(lastHash, h, diskHash);
 }
 
 function mvFloaterLibCountShownSeverities(shown) {
@@ -159,7 +187,52 @@ function mvFloaterLibFilterIssues(issues, showE, showW, hideDoctype) {
   return out;
 }
 
+function mvFloaterLibIssueDetailHtml(issue) {
+  if (!issue) return 'Select an issue to see its full description.';
+  var sev = 'Error';
+  if (issue.severity === 'warning') sev = 'Warning';
+  else if (issue.severity === 'info') sev = 'Info';
+  var loc = mvFloaterLibLineLocation(issue);
+  if (issue.file) loc = mvFloaterLibBasename(issue.file) + ' \u2014 ' + loc;
+  var meta = sev + ' \u00b7 ' + loc;
+  if (issue.ruleId) meta += ' \u00b7 ' + issue.ruleId;
+  return '<div class="issue-detail-meta">' + mvFloaterLibEsc(meta) + '</div>' +
+    '<div class="issue-detail-message">' + mvFloaterLibEsc(issue.message) + '</div>';
+}
+
+function mvFloaterLibDisplayHtml(text) {
+  var raw = String(text || '');
+  var out = '';
+  var sinceBreak = 0;
+  var i;
+  for (i = 0; i < raw.length; i++) {
+    var ch = raw.charAt(i);
+    out += mvFloaterLibEsc(ch);
+    sinceBreak++;
+    if (ch === '/' || ch === '\\' || ch === ' ' || ch === '-' || sinceBreak >= 16) {
+      out += '<wbr>';
+      sinceBreak = 0;
+    }
+  }
+  return out;
+}
+
+function mvFloaterLibFillIssueRows(list, issues, selectedIndex) {
+  var html = '';
+  var i;
+  for (i = 0; i < issues.length; i++) {
+    var cls = i === selectedIndex ? 'issue-row issue-row-selected' : 'issue-row';
+    html += '<div class="' + cls + '" onclick="mvFloaterSelectIssue(' + i + ')">' +
+      mvFloaterLibDisplayHtml(mvFloaterLibIssueOptionLabel(issues[i])) + '</div>';
+  }
+  list.innerHTML = html;
+}
+
 function mvFloaterLibFillIssueList(list, issues, selectedIndex) {
+  if (!list.options) {
+    mvFloaterLibFillIssueRows(list, issues, selectedIndex);
+    return;
+  }
   var i;
   for (i = 0; i < issues.length; i++) {
     list.options[i] = new Option(mvFloaterLibIssueOptionLabel(issues[i]), String(i));
@@ -173,6 +246,8 @@ var MVFloaterLib = {
   basename: mvFloaterLibBasename,
   hashText: mvFloaterLibHashText,
   normalizeMarkup: mvFloaterLibNormalizeMarkup,
+  canonicalUrl: mvFloaterLibCanonicalUrl,
+  urlVariants: mvFloaterLibUrlVariants,
   issueOptionLabel: mvFloaterLibIssueOptionLabel,
   missingDoctypeWarning: mvFloaterLibMissingDoctypeWarning,
   issuePassesFilters: mvFloaterLibIssuePassesFilters,
@@ -184,5 +259,7 @@ var MVFloaterLib = {
   clearOptions: mvFloaterLibClearOptions,
   issueList: mvFloaterLibIssueList,
   filterIssues: mvFloaterLibFilterIssues,
-  fillIssueList: mvFloaterLibFillIssueList
+  fillIssueList: mvFloaterLibFillIssueList,
+  issueDetailHtml: mvFloaterLibIssueDetailHtml,
+  displayHtml: mvFloaterLibDisplayHtml
 };

@@ -16,7 +16,7 @@ var MVFloaterState = {
   uiState: 'none',
   startedUrl: '',
   startedHash: '',
-  lastSuppressDoctype: false
+  lastResultSettingsKey: ''
 };
 
 var MVFloaterStateLabels = {

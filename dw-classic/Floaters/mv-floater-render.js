@@ -15,7 +15,12 @@ function mvFloaterFilteredIssues() {
 
 function mvFloaterRenderEmptyList(list) {
   var L = MVFloaterLib;
-  list.options[0] = new Option(L.emptyListMessage(MVFloaterState.uiState, MVFloaterState.lastResult), '');
+  var msg = L.emptyListMessage(MVFloaterState.uiState, MVFloaterState.lastResult);
+  if (list.options) {
+    list.options[0] = new Option(msg, '');
+    return;
+  }
+  list.innerHTML = '<div class="issue-row">' + L.esc(msg) + '</div>';
 }
 
 function mvFloaterVisibleIssues() {
@@ -42,10 +47,24 @@ function mvFloaterPaintIssueList(issues) {
   MVFloaterState.suppressListEvent = false;
 }
 
+function mvFloaterDetailIssue(issues) {
+  if (!issues || !issues.length) return null;
+  var idx = MVFloaterState.selectedIndex;
+  if (idx >= 0 && idx < issues.length) return issues[idx];
+  return issues[0];
+}
+
+function mvFloaterUpdateIssueDetail(issues) {
+  var el = mvFloater$('issueDetail');
+  if (!el) return;
+  el.innerHTML = MVFloaterLib.issueDetailHtml(mvFloaterDetailIssue(issues));
+}
+
 function mvFloaterRender() {
   var issues = mvFloaterVisibleIssues();
   mvFloaterUpdateSummary();
   mvFloaterPaintIssueList(issues);
+  mvFloaterUpdateIssueDetail(issues);
 }
 
 function mvFloaterNavigateToIssue(issue) {
@@ -58,6 +77,7 @@ function mvFloaterSelectIssue(index) {
   var issues = mvFloaterFilteredIssues();
   if (isNaN(index) || index < 0 || index >= issues.length) return;
   MVFloaterState.selectedIndex = index;
+  mvFloaterUpdateIssueDetail(issues);
   mvFloaterNavigateToIssue(issues[index]);
 }
 
@@ -90,7 +110,7 @@ function mvFloaterResultIsNoDocument(result) {
 function mvFloaterChromeFromResult(result, counts) {
   var L = MVFloaterLib;
   if (result.error) return { kind: 'fail', detail: result.error };
-  if (counts.errors === 0) {
+  if (counts.errors === 0 && result.ok !== false) {
     return { kind: 'ok', detail: L.detailFromCounts(0, counts.warnings) };
   }
   return { kind: 'fail', detail: L.detailFromCounts(counts.errors, counts.warnings) };
