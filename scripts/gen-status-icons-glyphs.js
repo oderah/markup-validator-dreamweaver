@@ -1,6 +1,7 @@
 'use strict';
 
 var GEN_ICON_SIZE = 16;
+var GEN_ICON_CHECK = [[[4.6, 8.3], [7, 10.7]], [[7, 10.7], [11.4, 5.6]]];
 
 function genIconDistToSegment(px, py, a, b) {
   var dx = b[0] - a[0];
@@ -30,5 +31,6 @@ function genIconInGlyph(glyph, x, y) {
 
 module.exports = {
   GEN_ICON_SIZE: GEN_ICON_SIZE,
+  GEN_ICON_CHECK: GEN_ICON_CHECK,
   genIconInGlyph: genIconInGlyph
 };

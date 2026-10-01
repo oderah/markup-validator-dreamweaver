@@ -16,7 +16,7 @@ var OUT = path.join(__dirname, '..', 'dw-classic', 'Floaters', 'MarkupValidator'
 var ICONS = {
   none: { color: [107, 114, 128], glyph: [[[5, 8], [11, 8]]] },
   busy: { color: [37, 99, 235], glyph: 'dots' },
-  ok: { color: [22, 128, 72], glyph: [[[4.6, 8.3], [7, 10.7]], [[7, 10.7], [11.4, 5.6]]] },
+  ok: { color: [22, 128, 72], glyph: glyphMod.GEN_ICON_CHECK },
   fail: { color: [200, 40, 40], glyph: [[[5.3, 5.3], [10.7, 10.7]], [[10.7, 5.3], [5.3, 10.7]]] }
 };
 
@@ -31,7 +31,7 @@ Object.keys(ICONS).forEach(function (name) {
 var TOOL_SIZE = 18;
 var toolIcon = {
   color: [15, 76, 92],
-  glyph: [[[5.2, 4.4], [3.1, 8]], [[3.1, 8], [5.2, 11.6]], [[10.8, 4.4], [12.9, 8]], [[12.9, 8], [10.8, 11.6]]]
+  glyph: glyphMod.GEN_ICON_CHECK
 };
 var toolFile = path.join(__dirname, '..', 'dw-classic', 'Objects', 'Favorites', 'Markup Validator.gif');
 fs.writeFileSync(toolFile, gifMod.genIconEncodeGif(renderMod.genIconRenderIcon(toolIcon, TOOL_SIZE, SS), TOOL_SIZE));
